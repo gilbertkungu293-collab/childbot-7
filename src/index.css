@@ -8,26 +8,41 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 240 100% 97%;
+    --foreground: 260 15% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 260 15% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 260 15% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 250 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 250 100% 75%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 320 60% 85%;
+    --secondary-foreground: 260 15% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 50% 95%;
+    --muted-foreground: 260 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 40 95% 75%;
+    --accent-foreground: 260 15% 20%;
+    
+    --bot-primary: 200 90% 65%;
+    --bot-secondary: 280 70% 70%;
+    --chat-user: 120 60% 90%;
+    --chat-bot: 200 80% 95%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-background: linear-gradient(135deg, hsl(240 100% 97%), hsl(260 60% 98%));
+    --gradient-bot: linear-gradient(135deg, hsl(var(--bot-primary)), hsl(var(--bot-secondary)));
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --bounce-gentle: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -56,26 +71,37 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 260 30% 8%;
+    --foreground: 240 100% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 25% 12%;
+    --card-foreground: 240 100% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 25% 12%;
+    --popover-foreground: 240 100% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 250 80% 70%;
+    --primary-foreground: 260 30% 8%;
+    --primary-glow: 250 100% 85%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 320 40% 25%;
+    --secondary-foreground: 240 100% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 260 20% 15%;
+    --muted-foreground: 240 20% 70%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 40 80% 60%;
+    --accent-foreground: 260 30% 8%;
+    
+    --bot-primary: 200 80% 75%;
+    --bot-secondary: 280 60% 80%;
+    --chat-user: 120 40% 20%;
+    --chat-bot: 200 30% 20%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-background: linear-gradient(135deg, hsl(260 30% 8%), hsl(280 25% 12%));
+    --gradient-bot: linear-gradient(135deg, hsl(var(--bot-primary)), hsl(var(--bot-secondary)));
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -100,6 +126,34 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: var(--gradient-background);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  .chat-message-user {
+    @apply bg-chat-user text-foreground rounded-2xl px-4 py-3 max-w-[80%] ml-auto;
+  }
+  
+  .chat-message-bot {
+    @apply bg-chat-bot text-foreground rounded-2xl px-4 py-3 max-w-[80%] mr-auto;
+  }
+  
+  .bot-avatar {
+    background: var(--gradient-bot);
+    transition: var(--bounce-gentle);
+  }
+  
+  .bot-avatar:hover {
+    transform: scale(1.05) rotate(5deg);
+  }
+  
+  .chat-input {
+    transition: var(--transition-smooth);
+  }
+  
+  .chat-input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px hsl(var(--primary) / 0.2);
   }
 }
