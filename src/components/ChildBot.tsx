@@ -72,19 +72,28 @@ const ChildBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const getBotResponse = (userMessage: string): string => {
-    const message = userMessage.toLowerCase();
-    
-    // Find matching response from database
-    const matchingKnowledge = botKnowledge.find(knowledge => 
-      message.includes(knowledge.keyword.toLowerCase())
-    );
-    
-    if (matchingKnowledge) {
-      return matchingKnowledge.response;
+  const getBotResponse = async (userMessage: string): Promise<string> => {
+    try {
+      const response = await fetch('https://childbot-groq.onrender.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      return data.response || "That's really interesting! 🌟 Tell me more about that, or we could explore something new together. I'm here to help and have fun with you!";
+    } catch (error) {
+      console.error('Error calling AI service:', error);
+      return "That's really interesting! 🌟 Tell me more about that, or we could explore something new together. I'm here to help and have fun with you!";
     }
-    
-    return "That's really interesting! 🌟 Tell me more about that, or we could explore something new together. I'm here to help and have fun with you!";
   };
 
   const handleSendMessage = async (text: string) => {
@@ -99,10 +108,11 @@ const ChildBot = () => {
     setIsTyping(true);
 
     // Simulate bot thinking time
-    setTimeout(() => {
+    setTimeout(async () => {
+      const botResponseText = await getBotResponse(text);
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: getBotResponse(text),
+        text: botResponseText,
         isBot: true,
         timestamp: new Date(),
       };
