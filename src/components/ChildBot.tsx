@@ -6,12 +6,20 @@ import ChatInput from "./ChatInput";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import botAvatar from "@/assets/childbot-avatar.png";
 import { Sparkles, Heart } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
   text: string;
   isBot: boolean;
   timestamp: Date;
+}
+
+interface BotKnowledge {
+  id: string;
+  keyword: string;
+  response: string;
+  category: string;
 }
 
 const ChildBot = () => {
@@ -25,6 +33,7 @@ const ChildBot = () => {
   ]);
   
   const [isTyping, setIsTyping] = useState(false);
+  const [botKnowledge, setBotKnowledge] = useState<BotKnowledge[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -36,6 +45,29 @@ const ChildBot = () => {
     }
   };
 
+  // Fetch bot knowledge from database
+  useEffect(() => {
+    const fetchBotKnowledge = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('bot_knowledge')
+          .select('*')
+          .eq('is_active', true);
+        
+        if (error) {
+          console.error('Error fetching bot knowledge:', error);
+          return;
+        }
+        
+        setBotKnowledge(data || []);
+      } catch (error) {
+        console.error('Error fetching bot knowledge:', error);
+      }
+    };
+
+    fetchBotKnowledge();
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -43,28 +75,13 @@ const ChildBot = () => {
   const getBotResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
-    if (message.includes("story")) {
-      return "Once upon a time, in a magical forest, there lived a kind robot who loved helping children learn new things! 📖✨ Would you like to hear more or create your own story?";
-    }
+    // Find matching response from database
+    const matchingKnowledge = botKnowledge.find(knowledge => 
+      message.includes(knowledge.keyword.toLowerCase())
+    );
     
-    if (message.includes("color")) {
-      return "I love all colors, but purple and blue are super special to me! 💜💙 They remind me of the sky and flowers. What's your favorite color?";
-    }
-    
-    if (message.includes("learn") || message.includes("help")) {
-      return "I'd love to help you learn! We could practice counting, learn about animals, or explore fun facts about space! 🚀 What sounds interesting to you?";
-    }
-    
-    if (message.includes("game") || message.includes("play")) {
-      return "Games are so much fun! 🎮 We could play 20 questions, count things around you, or I could tell you riddles! What kind of game sounds fun?";
-    }
-    
-    if (message.includes("hello") || message.includes("hi")) {
-      return "Hello! It's wonderful to meet you! 😊 I'm so excited to chat and learn together. What's your name?";
-    }
-    
-    if (message.includes("name")) {
-      return "I'm ChildBot! I'm here to be your friendly learning buddy. I love helping kids discover new things and have fun while learning! 🤖💕";
+    if (matchingKnowledge) {
+      return matchingKnowledge.response;
     }
     
     return "That's really interesting! 🌟 Tell me more about that, or we could explore something new together. I'm here to help and have fun with you!";
